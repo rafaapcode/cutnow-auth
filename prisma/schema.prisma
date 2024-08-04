@@ -47,20 +47,20 @@ type Servicos {
 }
 
 model Barbeiro {
-  id           String       @id @default(auto()) @map("_id") @db.ObjectId
-  email        String       @unique @db.String
-  nome         String       @db.String
-  senha        String       @db.String
-  cpf          String       @db.String
-  status       String       @db.String
-  informacoes  InfoBarbeiro
-  barbearia_id String       @unique @db.ObjectId
-  barbearia    Barbearia    @relation(fields: [barbearia_id], references: [id])
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  email        String        @unique @db.String
+  nome         String        @db.String
+  senha        String        @db.String
+  cpf          String        @db.String
+  status       String        @default("Indisponível") @db.String
+  informacoes  InfoBarbeiro?
+  barbearia_id String        @unique @db.ObjectId
+  barbearia    Barbearia     @relation(fields: [barbearia_id], references: [id])
 }
 
 type InfoBarbeiro {
-  portfolio String[]
-  banner    String
-  foto      String
-  descricao String
+  portfolio String[] @default([""])
+  banner    String   @default("")
+  foto      String   @default("")
+  descricao String   @default("")
 }

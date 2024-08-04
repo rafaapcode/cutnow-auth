@@ -24,15 +24,25 @@ export class AuthService {
       if (barberExist) {
         throw new HttpException('Usuário já existe', HttpStatus.BAD_REQUEST);
       }
-
+      const hashedPassword = await this.hashPasswordService.hash(barber.senha);
       const data = await this.prismaService.barbeiro.create({
-        data: barber,
+        data: {
+          ...barber,
+          senha: hashedPassword,
+        },
       });
 
       return { message: 'Usuário criado com sucesso !', data };
     } catch (err) {
       console.log(err.message);
-      throw new HttpException('Erro Interno', HttpStatus.INTERNAL_SERVER_ERROR);
+      if (err.message === 'Barbearia já existe') {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException(
+          'Erro Interno',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
     } finally {
       await this.prismaService.$disconnect();
     }
