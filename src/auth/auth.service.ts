@@ -2,8 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HashPasswordService } from 'src/hash-password/hash-password.service';
 import { PrismaService } from 'src/prisma.service';
-import { SignUpAdminDto } from './dto/auth.dto';
-import { BarberEntity } from './entities/Barber.entity';
+import { SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,7 +16,7 @@ export class AuthService {
 
   async loginAdmin() {}
 
-  async signupBarber(barber: BarberEntity) {
+  async signupBarber(barber: SignUpBarberDto) {
     try {
       const barberExist = await this.prismaService.barbeiro.findUnique({
         where: {
@@ -26,7 +25,7 @@ export class AuthService {
       });
 
       if (barberExist) {
-        throw new HttpException('Usuário já existe', HttpStatus.BAD_REQUEST);
+        throw new HttpException('Barbeiro já existe', HttpStatus.BAD_REQUEST);
       }
       const hashedPassword = await this.hashPasswordService.hash(barber.senha);
       const data = await this.prismaService.barbeiro.create({
@@ -36,9 +35,8 @@ export class AuthService {
         },
       });
 
-      return { message: 'Usuário criado com sucesso !', data };
+      return { message: 'Barbeiro criado com sucesso !', data };
     } catch (err) {
-      console.log(err.message);
       if (err.message === 'Barbeiro já existe') {
         throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
       } else {
