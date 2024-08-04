@@ -2,7 +2,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HashPasswordService } from 'src/hash-password/hash-password.service';
 import { PrismaService } from 'src/prisma.service';
-import { AdminEntity } from './entities/Admin.entity';
+import { SignUpAdminDto } from './dto/auth.dto';
 import { BarberEntity } from './entities/Barber.entity';
 
 @Injectable()
@@ -12,6 +12,10 @@ export class AuthService {
     private readonly hashPasswordService: HashPasswordService,
     private readonly prismaService: PrismaService,
   ) {}
+
+  async loginBarber() {}
+
+  async loginAdmin() {}
 
   async signupBarber(barber: BarberEntity) {
     try {
@@ -35,7 +39,7 @@ export class AuthService {
       return { message: 'Usuário criado com sucesso !', data };
     } catch (err) {
       console.log(err.message);
-      if (err.message === 'Barbearia já existe') {
+      if (err.message === 'Barbeiro já existe') {
         throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
       } else {
         throw new HttpException(
@@ -47,7 +51,7 @@ export class AuthService {
       await this.prismaService.$disconnect();
     }
   }
-  async signupAdmin(admin: AdminEntity) {
+  async signupAdmin(admin: SignUpAdminDto) {
     try {
       const adminExist = await this.prismaService.barbearia.findUnique({
         where: {
@@ -64,20 +68,13 @@ export class AuthService {
         data: {
           ...admin,
           senha: hashedPassword,
+          latitude: '',
+          longitude: '',
         },
       });
 
       return { message: 'Barbearia criada com sucesso !', data };
     } catch (err) {
-      console.log(err.message);
-      if (err.message === 'Barbearia já existe') {
-        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
-      } else {
-        throw new HttpException(
-          'Erro Interno',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      }
     } finally {
       await this.prismaService.$disconnect();
     }

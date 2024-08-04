@@ -1,4 +1,4 @@
-export class AuthPayloadDto {
+export class LoginDto {
   email: string;
   password: string;
 }
@@ -9,8 +9,6 @@ export class SignUpAdminDto {
   nome: string;
   nomeDaBarbearia: string;
   cnpj: string;
-  latitude: string;
-  longitude: string;
   informacoes: any;
   servicos: any[];
 }
