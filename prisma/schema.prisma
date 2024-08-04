@@ -1,0 +1,66 @@
+generator client {
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native"]
+  previewFeatures = ["fullTextIndex"]
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+model Barbearia {
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  email           String        @unique @db.String
+  senha           String        @db.String
+  nome            String        @db.String
+  nomeDaBarbearia String        @db.String
+  cnpj            String        @db.String
+  latitude        String        @db.String
+  longitude       String        @db.String
+  informacoes     InfoBarbearia
+  servicos        Servicos[]
+  Barbeiro        Barbeiro[]
+
+  @@fulltext([email, latitude, longitude])
+}
+
+type InfoBarbearia {
+  cep                     String
+  rua                     String
+  bairro                  String
+  cidade                  String
+  estado                  String
+  numero                  Int
+  horarioAbertura         String
+  horarioFechamento       String
+  fotosEstruturaBarbearia String @default("")
+  fotoBanner              String @default("")
+  logo                    String @default("")
+  status                  String @default("Fechado")
+}
+
+type Servicos {
+  nomeService String
+  tempoMedio  Int
+  preco       Int
+}
+
+model Barbeiro {
+  id           String       @id @default(auto()) @map("_id") @db.ObjectId
+  email        String       @unique @db.String
+  nome         String       @db.String
+  senha        String       @db.String
+  cpf          String       @db.String
+  status       String       @db.String
+  informacoes  InfoBarbeiro
+  barbearia_id String       @unique @db.ObjectId
+  barbearia    Barbearia    @relation(fields: [barbearia_id], references: [id])
+}
+
+type InfoBarbeiro {
+  portfolio String[]
+  banner    String
+  foto      String
+  descricao String
+}
