@@ -34,8 +34,42 @@ export class AuthService {
       console.log(err.message);
       throw new HttpException('Erro Interno', HttpStatus.INTERNAL_SERVER_ERROR);
     } finally {
-      this.prismaService.$disconnect();
+      await this.prismaService.$disconnect();
     }
   }
-  async signupAdmin(admin: AdminEntity) {}
+  async signupAdmin(admin: AdminEntity) {
+    try {
+      const adminExist = await this.prismaService.barbearia.findUnique({
+        where: {
+          email: admin.email,
+        },
+      });
+
+      if (adminExist) {
+        throw new HttpException('Barbearia já existe', HttpStatus.BAD_REQUEST);
+      }
+
+      const hashedPassword = await this.hashPasswordService.hash(admin.senha);
+      const data = await this.prismaService.barbearia.create({
+        data: {
+          ...admin,
+          senha: hashedPassword,
+        },
+      });
+
+      return { message: 'Barbearia criada com sucesso !', data };
+    } catch (err) {
+      console.log(err.message);
+      if (err.message === 'Barbearia já existe') {
+        throw new HttpException(err.message, HttpStatus.BAD_REQUEST);
+      } else {
+        throw new HttpException(
+          'Erro Interno',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      }
+    } finally {
+      await this.prismaService.$disconnect();
+    }
+  }
 }
