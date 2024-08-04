@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { HashPasswordService } from 'src/hash-password/hash-password.service';
 import { AuthPayloadDto } from './dto/auth.dto';
@@ -25,12 +29,15 @@ export class AuthService {
     private readonly hashPasswordService: HashPasswordService,
   ) {}
 
-  async validateUser({ email, password }: AuthPayloadDto) {
+  async validateAdm({ email, password }: AuthPayloadDto) {
     const user = fakeUsers.find((user) => user.email === email);
 
-    if (!user) return null;
+    if (!user) throw new NotFoundException('Usuário não encontrado');
     if (!(await this.hashPasswordService.compare(user.password, password))) {
       throw new UnauthorizedException('Senha incorreta !');
     }
+    const { password: pass, ...info } = user;
+    const payload = { ...info };
+    return this.jwtService.sign(payload);
   }
 }
