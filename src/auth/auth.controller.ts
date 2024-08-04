@@ -10,4 +10,9 @@ export class AuthController {
   async loginAdmin(@Body() authPayload: AuthPayloadDto) {
     return await this.authService.validateAdm(authPayload);
   }
+
+  @Post('login/barber')
+  async loginBarber(@Body() authPayload: AuthPayloadDto) {
+    return await this.authService.validateBarber(authPayload);
+  }
 }
