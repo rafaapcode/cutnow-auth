@@ -8,7 +8,6 @@ export class AuthController {
 
   @Post('login/admin')
   async loginAdmin(@Body() authPayload: AuthPayloadDto) {
-    const token = await this.authService.validateAdm(authPayload);
-    return { access_token: token };
+    return await this.authService.validateAdm(authPayload);
   }
 }
