@@ -83,7 +83,7 @@ export const signUpBarberSchema = z.object({
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
       messagePasswordError,
     ),
-  status: z.string(),
+  status: z.string().optional(),
   barbearia_id: z.string(),
   informacoes: z
     .object({

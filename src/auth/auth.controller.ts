@@ -21,7 +21,6 @@ export class AuthController {
     // return await this.authService.validateBarber(authPayload);
   }
 
-  // TODO: Calcular lat e long
   @Post('signup/admin')
   @UsePipes(new ZodValidationPipe(signUpAdminSchema))
   async signupAdmin(@Body() body: SignUpAdminDto) {

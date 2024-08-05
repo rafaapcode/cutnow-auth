@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from 'src/database/database.service';
 import { GeolocationService } from 'src/geolocation/geolocation.service';
@@ -51,12 +56,18 @@ export class AuthService {
   }
   async signupAdmin(admin: SignUpAdminDto) {
     try {
-      const adminExist = await this.prismaService.barbearia.findUnique({
+      const adminExist = await this.prismaService.barbearia.findFirst({
         where: {
-          email: admin.email,
+          OR: [
+            {
+              email: admin.email,
+            },
+            {
+              nomeDaBarbearia: admin.nomeDaBarbearia,
+            },
+          ],
         },
       });
-
       if (adminExist) {
         throw new HttpException('Barbearia já existe', HttpStatus.BAD_REQUEST);
       }
@@ -84,6 +95,11 @@ export class AuthService {
 
       return { message: 'Barbearia criada com sucesso !', data };
     } catch (err) {
+      if (err.message === 'Barbearia já existe') {
+        throw new HttpException('Barbearia já existe', HttpStatus.BAD_REQUEST);
+      }
+      console.log(err.message);
+      throw new InternalServerErrorException(err.message);
     } finally {
       await this.prismaService.$disconnect();
     }

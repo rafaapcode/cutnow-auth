@@ -14,7 +14,7 @@ model Barbearia {
   email           String        @unique @db.String
   senha           String        @db.String
   nome            String        @db.String
-  nomeDaBarbearia String        @db.String
+  nomeDaBarbearia String        @unique @db.String
   cnpj            String        @db.String
   latitude        String        @db.String
   longitude       String        @db.String
@@ -22,7 +22,7 @@ model Barbearia {
   servicos        Servicos[]
   barbeiro        Barbeiro[]
 
-  @@fulltext([email, latitude, longitude])
+  @@fulltext([email, latitude, longitude, nomeDaBarbearia])
 }
 
 type InfoBarbearia {

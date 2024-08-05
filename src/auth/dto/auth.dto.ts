@@ -31,7 +31,7 @@ export class SignUpBarberDto {
   nome: string;
   senha: string;
   cpf: string;
-  status: string;
-  informacoes: any;
+  status?: string;
+  informacoes?: any;
   barbearia_id: string;
 }
