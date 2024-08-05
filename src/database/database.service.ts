@@ -1,17 +1,24 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Barbeiro } from '@prisma/client';
-import { SignUpBarberDto } from 'src/auth/dto/auth.dto';
+import { Barbearia, Barbeiro } from '@prisma/client';
+import { SignUpAdminDto, SignUpBarberDto } from 'src/auth/dto/auth.dto';
 import { PrismaService } from 'src/prisma.service';
 
 @Injectable()
 export class DatabaseService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async findUniqueBarber(email: string): Promise<Barbeiro> {
+  async findUniqueBarber(email: string, cpf: string): Promise<Barbeiro> {
     try {
-      const barber = await this.prismaService.barbeiro.findUnique({
+      const barber = await this.prismaService.barbeiro.findFirst({
         where: {
-          email,
+          OR: [
+            {
+              email,
+            },
+            {
+              cpf,
+            },
+          ],
         },
       });
 
@@ -19,6 +26,8 @@ export class DatabaseService {
     } catch (error) {
       console.log(error.message);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    } finally {
+      await this.prismaService.$disconnect();
     }
   }
 
@@ -38,6 +47,60 @@ export class DatabaseService {
     } catch (error) {
       console.log(error.message);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    } finally {
+      await this.prismaService.$disconnect();
+    }
+  }
+
+  async findUniqueBarbershop(
+    email: string,
+    nomeDaBarbearia: string,
+  ): Promise<Barbearia> {
+    try {
+      const barbearia = await this.prismaService.barbearia.findFirst({
+        where: {
+          OR: [
+            {
+              email,
+            },
+            {
+              nomeDaBarbearia,
+            },
+          ],
+        },
+      });
+
+      return barbearia;
+    } catch (error) {
+      console.log(error.message);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    } finally {
+      await this.prismaService.$disconnect();
+    }
+  }
+
+  async createBarbershop(
+    admin: SignUpAdminDto,
+    hashedPassword: string,
+    lat: string,
+    lng: string,
+  ): Promise<Barbearia> {
+    try {
+      const data = await this.prismaService.barbearia.create({
+        data: {
+          ...admin,
+          senha: hashedPassword,
+          latitude: lat,
+          longitude: lng,
+        },
+      });
+
+      return data;
+    } catch (error) {
+      console.log(error.message);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    } finally {
+      await this.prismaService.$disconnect();
     }
   }
 }

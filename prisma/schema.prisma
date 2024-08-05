@@ -51,11 +51,11 @@ model Barbeiro {
   email        String        @unique @db.String
   nome         String        @db.String
   senha        String        @db.String
-  cpf          String        @db.String
+  cpf          String        @unique @db.String
   status       String        @default("Indisponível") @db.String
   informacoes  InfoBarbeiro?
   barbearia_id String        @db.ObjectId
-  barbearia    Barbearia     @relation(fields: [barbearia_id], references: [id])
+  barbearia    Barbearia     @relation(fields: [barbearia_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
 }
 
 type InfoBarbeiro {

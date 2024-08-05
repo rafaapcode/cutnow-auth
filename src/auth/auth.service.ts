@@ -8,7 +8,6 @@ import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from 'src/database/database.service';
 import { GeolocationService } from 'src/geolocation/geolocation.service';
 import { HashPasswordService } from 'src/hash-password/hash-password.service';
-import { PrismaService } from 'src/prisma.service';
 import { SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
 
 @Injectable()
@@ -16,7 +15,6 @@ export class AuthService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly hashPasswordService: HashPasswordService,
-    private readonly prismaService: PrismaService,
     private readonly geolocationService: GeolocationService,
     private readonly databaseService: DatabaseService,
   ) {}
@@ -29,6 +27,7 @@ export class AuthService {
     try {
       const barberExist = await this.databaseService.findUniqueBarber(
         barber.email,
+        barber.cpf,
       );
 
       if (barberExist) {
@@ -50,24 +49,14 @@ export class AuthService {
           HttpStatus.INTERNAL_SERVER_ERROR,
         );
       }
-    } finally {
-      await this.prismaService.$disconnect();
     }
   }
   async signupAdmin(admin: SignUpAdminDto) {
     try {
-      const adminExist = await this.prismaService.barbearia.findFirst({
-        where: {
-          OR: [
-            {
-              email: admin.email,
-            },
-            {
-              nomeDaBarbearia: admin.nomeDaBarbearia,
-            },
-          ],
-        },
-      });
+      const adminExist = await this.databaseService.findUniqueBarbershop(
+        admin.email,
+        admin.nomeDaBarbearia,
+      );
       if (adminExist) {
         throw new HttpException('Barbearia já existe', HttpStatus.BAD_REQUEST);
       }
@@ -84,14 +73,12 @@ export class AuthService {
 
       const { lat, lng } = dataResponse.geometry.location;
 
-      const data = await this.prismaService.barbearia.create({
-        data: {
-          ...admin,
-          senha: hashedPassword,
-          latitude: `${lat}`,
-          longitude: `${lng}`,
-        },
-      });
+      const data = await this.databaseService.createBarbershop(
+        admin,
+        hashedPassword,
+        `${lat}`,
+        `${lng}`,
+      );
 
       return { message: 'Barbearia criada com sucesso !', data };
     } catch (err) {
@@ -100,8 +87,6 @@ export class AuthService {
       }
       console.log(err.message);
       throw new InternalServerErrorException(err.message);
-    } finally {
-      await this.prismaService.$disconnect();
     }
   }
 }
