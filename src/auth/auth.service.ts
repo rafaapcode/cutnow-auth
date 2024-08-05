@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { GeolocationService } from 'src/geolocation/geolocation.service';
 import { HashPasswordService } from 'src/hash-password/hash-password.service';
 import { PrismaService } from 'src/prisma.service';
 import { SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
@@ -10,6 +11,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly hashPasswordService: HashPasswordService,
     private readonly prismaService: PrismaService,
+    private readonly geolocationService: GeolocationService,
   ) {}
 
   async loginBarber() {}
@@ -62,12 +64,23 @@ export class AuthService {
       }
 
       const hashedPassword = await this.hashPasswordService.hash(admin.senha);
+      const dataResponse = await this.geolocationService.getLatAndLong({
+        bairro: admin.informacoes.bairro,
+        cep: admin.informacoes.cep,
+        cidade: admin.informacoes.cidade,
+        estado: admin.informacoes.estado,
+        numero: admin.informacoes.numero,
+        rua: admin.informacoes.rua,
+      });
+
+      const { lat, lng } = dataResponse.geometry.location;
+
       const data = await this.prismaService.barbearia.create({
         data: {
           ...admin,
           senha: hashedPassword,
-          latitude: '',
-          longitude: '',
+          latitude: `${lat}`,
+          longitude: `${lng}`,
         },
       });
 

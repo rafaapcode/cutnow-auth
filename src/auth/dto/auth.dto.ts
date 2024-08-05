@@ -9,7 +9,20 @@ export class SignUpAdminDto {
   nome: string;
   nomeDaBarbearia: string;
   cnpj: string;
-  informacoes: any;
+  informacoes: {
+    cep: string;
+    rua: string;
+    bairro: string;
+    cidade: string;
+    estado: string;
+    numero: number;
+    horarioAbertura: string;
+    horarioFechamento: string;
+    fotosEstruturaBarbearia?: string;
+    fotoBanner?: string;
+    logo?: string;
+    status?: string;
+  };
   servicos: any[];
 }
 
