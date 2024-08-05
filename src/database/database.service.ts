@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { Barbearia, Barbeiro } from '@prisma/client';
 import { SignUpAdminDto, SignUpBarberDto } from 'src/auth/dto/auth.dto';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class DatabaseService {

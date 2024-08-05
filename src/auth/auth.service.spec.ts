@@ -1,4 +1,8 @@
+import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
+import { DatabaseService } from '../database/database.service';
+import { GeolocationService } from '../geolocation/geolocation.service';
+import { HashPasswordService } from '../hash-password/hash-password.service';
 import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
@@ -6,7 +10,25 @@ describe('AuthService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [AuthService],
+      providers: [
+        AuthService,
+        {
+          provide: JwtService,
+          useValue: {},
+        },
+        {
+          provide: HashPasswordService,
+          useValue: {},
+        },
+        {
+          provide: GeolocationService,
+          useValue: {},
+        },
+        {
+          provide: DatabaseService,
+          useValue: {},
+        },
+      ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);

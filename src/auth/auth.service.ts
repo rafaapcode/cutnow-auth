@@ -5,9 +5,9 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { DatabaseService } from 'src/database/database.service';
-import { GeolocationService } from 'src/geolocation/geolocation.service';
-import { HashPasswordService } from 'src/hash-password/hash-password.service';
+import { DatabaseService } from '../database/database.service';
+import { GeolocationService } from '../geolocation/geolocation.service';
+import { HashPasswordService } from '../hash-password/hash-password.service';
 import { SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
 
 @Injectable()
