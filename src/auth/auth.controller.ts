@@ -1,5 +1,12 @@
-import { Body, Controller, Post, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UseInterceptors,
+  UsePipes,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { WrapResponseInterceptor } from './common/interceptor/wrap-response.interceptor';
 import { LoginDto, SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
 import { ZodValidationPipe } from './validation.pipe';
 import {
@@ -23,21 +30,17 @@ export class AuthController {
 
   @Post('signup/admin')
   @UsePipes(new ZodValidationPipe(signUpAdminSchema))
+  @UseInterceptors(new WrapResponseInterceptor())
   async signupAdmin(@Body() body: SignUpAdminDto) {
-    const {
-      data: { senha, ...info },
-      message,
-    } = await this.authService.signupAdmin(body);
-    return { message, data: info };
+    const res = await this.authService.signupAdmin(body);
+    return res;
   }
 
   @Post('signup/barber')
   @UsePipes(new ZodValidationPipe(signUpBarberSchema))
+  @UseInterceptors(new WrapResponseInterceptor())
   async signupBarber(@Body() body: SignUpBarberDto) {
-    const {
-      data: { senha, ...info },
-      message,
-    } = await this.authService.signupBarber(body);
-    return { message, data: info };
+    const res = await this.authService.signupBarber(body);
+    return res;
   }
 }

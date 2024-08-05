@@ -33,6 +33,7 @@ export class AuthService {
       if (barberExist) {
         throw new HttpException('Barbeiro já existe', HttpStatus.BAD_REQUEST);
       }
+
       const hashedPassword = await this.hashPasswordService.hash(barber.senha);
       const data = await this.databaseService.createBarber(
         barber,
