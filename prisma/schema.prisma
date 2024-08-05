@@ -54,7 +54,7 @@ model Barbeiro {
   cpf          String        @db.String
   status       String        @default("Indisponível") @db.String
   informacoes  InfoBarbeiro?
-  barbearia_id String        @unique @db.ObjectId
+  barbearia_id String        @db.ObjectId
   barbearia    Barbearia     @relation(fields: [barbearia_id], references: [id])
 }
 
