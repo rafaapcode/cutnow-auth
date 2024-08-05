@@ -20,7 +20,7 @@ model Barbearia {
   longitude       String        @db.String
   informacoes     InfoBarbearia
   servicos        Servicos[]
-  Barbeiro        Barbeiro[]
+  barbeiro        Barbeiro[]
 
   @@fulltext([email, latitude, longitude])
 }

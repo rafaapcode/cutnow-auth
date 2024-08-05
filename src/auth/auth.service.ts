@@ -1,5 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { DatabaseService } from 'src/database/database.service';
 import { GeolocationService } from 'src/geolocation/geolocation.service';
 import { HashPasswordService } from 'src/hash-password/hash-password.service';
 import { PrismaService } from 'src/prisma.service';
@@ -12,6 +13,7 @@ export class AuthService {
     private readonly hashPasswordService: HashPasswordService,
     private readonly prismaService: PrismaService,
     private readonly geolocationService: GeolocationService,
+    private readonly databaseService: DatabaseService,
   ) {}
 
   async loginBarber() {}
@@ -20,22 +22,18 @@ export class AuthService {
 
   async signupBarber(barber: SignUpBarberDto) {
     try {
-      const barberExist = await this.prismaService.barbeiro.findUnique({
-        where: {
-          email: barber.email,
-        },
-      });
+      const barberExist = await this.databaseService.findUniqueBarber(
+        barber.email,
+      );
 
       if (barberExist) {
         throw new HttpException('Barbeiro já existe', HttpStatus.BAD_REQUEST);
       }
       const hashedPassword = await this.hashPasswordService.hash(barber.senha);
-      const data = await this.prismaService.barbeiro.create({
-        data: {
-          ...barber,
-          senha: hashedPassword,
-        },
-      });
+      const data = await this.databaseService.createBarber(
+        barber,
+        hashedPassword,
+      );
 
       return { message: 'Barbeiro criado com sucesso !', data };
     } catch (err) {
