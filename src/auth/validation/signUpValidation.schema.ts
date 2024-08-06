@@ -46,7 +46,7 @@ export const signUpAdminSchema = z
         .min(1, 'Deve ter pelo meno 1 caractere'),
       horarioAbertura: z.string(),
       horarioFechamento: z.string(),
-      fotosEstruturaBarbearia: z.string().optional().array(),
+      fotosEstruturaBarbearia: z.string().array().optional(),
       fotoBanner: z.string().optional(),
       logo: z.string().optional(),
       status: z.string().optional(),

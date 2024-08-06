@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  Param,
   Post,
   UseInterceptors,
   UsePipes,
@@ -38,6 +40,30 @@ export class AuthController {
       await this.authService.loginBarber(authPayload);
     return {
       message: 'Bem-Vindo !',
+      access_token,
+      refresh_token,
+    };
+  }
+
+  @Get('barber/:refreshToken')
+  async refreshBarber(@Param('refreshToken') refreshToken: string) {
+    const { access_token, refresh_token } =
+      await this.authService.refreshBarber(refreshToken);
+
+    return {
+      message: 'Tokens Atualizados com sucesso!',
+      access_token,
+      refresh_token,
+    };
+  }
+
+  @Get('admin/:refreshToken')
+  async refreshBarbershop(@Param('refreshToken') refreshToken: string) {
+    const { access_token, refresh_token } =
+      await this.authService.refreshBarbershop(refreshToken);
+
+    return {
+      message: 'Tokens Atualizados com sucesso!',
       access_token,
       refresh_token,
     };
