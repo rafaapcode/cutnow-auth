@@ -53,6 +53,9 @@ export class AuthService {
       return { access_token, refresh_token };
     } catch (error) {
       console.log(error.message);
+      if (error.message == 'Senha incorreta') {
+        throw new UnauthorizedException('Senha incorreta');
+      }
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
@@ -88,6 +91,9 @@ export class AuthService {
       return { access_token, refresh_token };
     } catch (error) {
       console.log(error.message);
+      if (error.message == 'Senha incorreta') {
+        throw new UnauthorizedException('Senha incorreta');
+      }
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }

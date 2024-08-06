@@ -1,4 +1,5 @@
-import { HttpException } from '@nestjs/common';
+import { HttpException, UnauthorizedException } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseService } from '../database/database.service';
@@ -12,6 +13,8 @@ const createMockDatabase = (): MockDatabase => ({
   createBarbershop: jest.fn(),
   findUniqueBarber: jest.fn(),
   findUniqueBarbershop: jest.fn(),
+  findBarber: jest.fn(),
+  findBarbershop: jest.fn(),
 });
 
 type MockHash = Partial<Record<keyof HashPasswordService, jest.Mock>>;
@@ -31,12 +34,18 @@ const createMockJwt = (): MockJwt => ({
   verify: jest.fn(),
 });
 
+type MockConfig = Partial<Record<keyof ConfigService, jest.Mock>>;
+const createMockConfig = (): MockConfig => ({
+  getOrThrow: jest.fn(),
+});
+
 describe('AuthService', () => {
   let service: AuthService;
   let database: MockDatabase;
   let hashPassword: MockHash;
   let geolocation: MockGeolocation;
   let jwt: MockJwt;
+  let config: MockConfig;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -58,6 +67,10 @@ describe('AuthService', () => {
           provide: JwtService,
           useValue: createMockJwt(),
         },
+        {
+          provide: ConfigService,
+          useValue: createMockConfig(),
+        },
       ],
     }).compile();
 
@@ -66,6 +79,7 @@ describe('AuthService', () => {
     hashPassword = module.get<MockHash>(HashPasswordService);
     geolocation = module.get<MockGeolocation>(GeolocationService);
     jwt = module.get<MockJwt>(JwtService);
+    config = module.get<MockConfig>(ConfigService);
   });
 
   describe('Signup Barbershop', () => {
@@ -255,6 +269,110 @@ describe('AuthService', () => {
         message: 'Barbeiro criado com sucesso !',
         data: barbeiro,
       });
+    });
+  });
+
+  describe('Login Barber', () => {
+    const barbeiro = {
+      informacoes: null,
+      id: '66b1552caf62e42416954308',
+      email: 'rafaap@gmail.com',
+      nome: 'rafael legal',
+      cpf: '123123123',
+      status: 'Indisponível',
+      barbearia_id: '66b120775d5555694a6e24d4',
+    };
+
+    it('should throw an "UnauthorizedException" if the password is invalid"', async () => {
+      try {
+        database.findBarber.mockReturnValue(barbeiro);
+        hashPassword.compare.mockReturnValue(false);
+        jwt.sign.mockReturnValue('token');
+        await service.loginBarber({
+          email: 'rafa@gmail.com',
+          password: 'teste123@@',
+        });
+      } catch (error) {
+        console.log(error.message);
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error.message).toBe('Senha incorreta');
+      }
+    });
+
+    it('should return an access and refresh token', async () => {
+      database.findBarber.mockReturnValue(barbeiro);
+      hashPassword.compare.mockReturnValue('testedehash');
+      jwt.sign.mockReturnValue('token');
+      const res = await service.loginBarber({
+        email: 'rafa@gmail.com',
+        password: 'teste123@@',
+      });
+      expect(res).toEqual({ access_token: 'token', refresh_token: 'token' });
+    });
+  });
+
+  describe('Login BarberShop', () => {
+    const barbearia = {
+      informacoes: {
+        cep: '123456789',
+        rua: 'Rua de Teste',
+        bairro: 'Bairro de teste',
+        cidade: 'Cidade de teste',
+        estado: 'Estado do teste',
+        numero: 1,
+        horarioAbertura: '09:00h',
+        horarioFechamento: '18:00h',
+        fotosEstruturaBarbearia: ['urls'],
+        fotoBanner: 'url',
+        logo: 'url',
+        status: 'Fechado',
+      },
+      servicos: [
+        {
+          nomeService: 'Cabelo',
+          tempoMedio: 60,
+          preco: 40,
+        },
+        {
+          nomeService: 'Barba',
+          tempoMedio: 30,
+          preco: 20,
+        },
+      ],
+      id: '87g09435a10bklc1vb3q5dvdd0',
+      email: 'email@example.com',
+      nome: 'Nome de Teste',
+      nomeDaBarbearia: 'Nome barbearia teste',
+      cnpj: '84113099000128',
+      latitude: '-20.4835554',
+      longitude: '-54.6641381',
+    };
+
+    it('should throw an "UnauthorizedException" if the password is invalid"', async () => {
+      try {
+        database.findBarbershop.mockReturnValue(barbearia);
+        hashPassword.compare.mockReturnValue(false);
+        jwt.sign.mockReturnValue('token');
+        await service.loginAdmin({
+          email: 'rafa@gmail.com',
+          password: 'teste123@@',
+        });
+      } catch (error) {
+        console.log(error.message);
+        expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error.message).toBe('Senha incorreta');
+      }
+    });
+
+    it('should return an access and refresh token', async () => {
+      database.findBarbershop.mockReturnValue(barbearia);
+      hashPassword.compare.mockReturnValue('testedehash');
+      jwt.sign.mockReturnValue('token');
+      const res = await service.loginAdmin({
+        email: 'rafa@gmail.com',
+        password: 'teste123@@',
+      });
+      expect(res).toEqual({ access_token: 'token', refresh_token: 'token' });
     });
   });
 });
