@@ -93,6 +93,39 @@ export class AuthService {
     }
   }
 
+  async refresh(refreshToken: string) {
+    try {
+      const payload = this.jwtService.verify(refreshToken, {
+        secret: this.config.getOrThrow('REFRESH_SECRET'),
+      });
+
+      if (!payload) {
+        throw new UnauthorizedException('Invalid Token');
+      }
+
+      let user;
+      if (payload.cpf) {
+        user = this.databaseService.findBarber(payload.email);
+      } else {
+        user = this.databaseService.findBarbershop(payload.email);
+      }
+      const { senha, ...newPayload } = user;
+
+      const access_token = this.jwtService.sign(newPayload, {
+        secret: this.config.getOrThrow('JWT_SECRET'),
+        expiresIn: '2h',
+      });
+      const refresh_token = this.jwtService.sign(newPayload, {
+        secret: this.config.getOrThrow('REFRESH_SECRET'),
+        expiresIn: '7d',
+      });
+      return { access_token, refresh_token };
+    } catch (error) {
+      console.log(error.message);
+      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
   async signupBarber(barber: SignUpBarberDto) {
     try {
       const barberExist = await this.databaseService.findUniqueBarber(

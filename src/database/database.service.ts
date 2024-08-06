@@ -36,7 +36,7 @@ export class DatabaseService {
     }
   }
 
-  async findBarber(email: string): Promise<Barbeiro> {
+  async findBarber(email: string): Promise<any> {
     try {
       const barber = await this.prismaService.barbeiro.findUnique({
         where: {
@@ -47,7 +47,14 @@ export class DatabaseService {
       if (!barber) {
         throw new NotFoundException('Barbeiro não encontrado !');
       }
-      return barber;
+      return {
+        id: barber.id,
+        email: barber.email,
+        barbeariaId: barber.barbearia_id,
+        status: barber.status,
+        cpf: barber.cpf,
+        senha: barber.senha,
+      };
     } catch (error) {
       console.log(error.message);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
@@ -129,7 +136,7 @@ export class DatabaseService {
     }
   }
 
-  async findBarbershop(email: string): Promise<Barbearia> {
+  async findBarbershop(email: string): Promise<any> {
     try {
       const barbearia = await this.prismaService.barbearia.findUnique({
         where: {
@@ -140,7 +147,13 @@ export class DatabaseService {
       if (!barbearia) {
         throw new NotFoundException('Barbearia não encontrada !');
       }
-      return barbearia;
+      return {
+        id: barbearia.id,
+        email: barbearia.email,
+        lat: barbearia.latitude,
+        lng: barbearia.longitude,
+        senha: barbearia.senha,
+      };
     } catch (error) {
       console.log(error.message);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
