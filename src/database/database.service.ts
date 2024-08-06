@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Barbearia, Barbeiro } from '@prisma/client';
 import { SignUpAdminDto, SignUpBarberDto } from 'src/auth/dto/auth.dto';
 import { PrismaService } from '../prisma.service';
@@ -22,6 +27,26 @@ export class DatabaseService {
         },
       });
 
+      return barber;
+    } catch (error) {
+      console.log(error.message);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    } finally {
+      await this.prismaService.$disconnect();
+    }
+  }
+
+  async findBarber(email: string): Promise<Barbeiro> {
+    try {
+      const barber = await this.prismaService.barbeiro.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (!barber) {
+        throw new NotFoundException('Barbeiro não encontrado !');
+      }
       return barber;
     } catch (error) {
       console.log(error.message);
@@ -96,6 +121,26 @@ export class DatabaseService {
       });
 
       return data;
+    } catch (error) {
+      console.log(error.message);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    } finally {
+      await this.prismaService.$disconnect();
+    }
+  }
+
+  async findBarbershop(email: string): Promise<Barbearia> {
+    try {
+      const barbearia = await this.prismaService.barbearia.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (!barbearia) {
+        throw new NotFoundException('Barbearia não encontrada !');
+      }
+      return barbearia;
     } catch (error) {
       console.log(error.message);
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);

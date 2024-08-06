@@ -3,12 +3,14 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { DatabaseService } from '../database/database.service';
 import { GeolocationService } from '../geolocation/geolocation.service';
 import { HashPasswordService } from '../hash-password/hash-password.service';
-import { SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
+import { LoginDto, SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
@@ -17,11 +19,79 @@ export class AuthService {
     private readonly hashPasswordService: HashPasswordService,
     private readonly geolocationService: GeolocationService,
     private readonly databaseService: DatabaseService,
+    private readonly config: ConfigService,
   ) {}
 
-  async loginBarber() {}
+  async loginBarber(barbeiro: LoginDto) {
+    try {
+      const barber = await this.databaseService.findBarber(barbeiro.email);
+      const isValidPassword = await this.hashPasswordService.compare(
+        barber.senha,
+        barbeiro.password,
+      );
 
-  async loginAdmin() {}
+      if (!isValidPassword) {
+        throw new UnauthorizedException('Senha incorreta');
+      }
+
+      const payload = {
+        id: barber.id,
+        email: barber.email,
+        barbeariaId: barber.barbearia_id,
+        status: barber.status,
+        cpf: barber.cpf,
+      };
+
+      const access_token = this.jwtService.sign(payload, {
+        secret: this.config.getOrThrow('JWT_SECRET'),
+        expiresIn: '2h',
+      });
+      const refresh_token = this.jwtService.sign(payload, {
+        secret: this.config.getOrThrow('REFRESH_SECRET'),
+        expiresIn: '7d',
+      });
+
+      return { access_token, refresh_token };
+    } catch (error) {
+      console.log(error.message);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
+
+  async loginAdmin(admin: LoginDto) {
+    try {
+      const barbearia = await this.databaseService.findBarbershop(admin.email);
+      const isValidPassword = await this.hashPasswordService.compare(
+        barbearia.senha,
+        admin.password,
+      );
+
+      if (!isValidPassword) {
+        throw new UnauthorizedException('Senha incorreta');
+      }
+
+      const payload = {
+        id: barbearia.id,
+        email: barbearia.email,
+        lat: barbearia.latitude,
+        lng: barbearia.longitude,
+      };
+
+      const access_token = this.jwtService.sign(payload, {
+        secret: this.config.getOrThrow('JWT_SECRET'),
+        expiresIn: '2h',
+      });
+      const refresh_token = this.jwtService.sign(payload, {
+        secret: this.config.getOrThrow('REFRESH_SECRET'),
+        expiresIn: '7d',
+      });
+
+      return { access_token, refresh_token };
+    } catch (error) {
+      console.log(error.message);
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+  }
 
   async signupBarber(barber: SignUpBarberDto) {
     try {

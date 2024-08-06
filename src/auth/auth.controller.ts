@@ -9,6 +9,7 @@ import { AuthService } from './auth.service';
 import { WrapResponseInterceptor } from './common/interceptor/wrap-response.interceptor';
 import { LoginDto, SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
 import { ZodValidationPipe } from './validation.pipe';
+import { LoginSchema } from './validation/loginValidation.schema';
 import {
   signUpAdminSchema,
   signUpBarberSchema,
@@ -19,13 +20,27 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login/admin')
+  @UsePipes(new ZodValidationPipe(LoginSchema))
   async loginAdmin(@Body() authPayload: LoginDto) {
-    // return await this.authService.validateAdm(authPayload);
+    const { access_token, refresh_token } =
+      await this.authService.loginAdmin(authPayload);
+    return {
+      message: 'Bem-Vindo !',
+      access_token,
+      refresh_token,
+    };
   }
 
   @Post('login/barber')
+  @UsePipes(new ZodValidationPipe(LoginSchema))
   async loginBarber(@Body() authPayload: LoginDto) {
-    // return await this.authService.validateBarber(authPayload);
+    const { access_token, refresh_token } =
+      await this.authService.loginBarber(authPayload);
+    return {
+      message: 'Bem-Vindo !',
+      access_token,
+      refresh_token,
+    };
   }
 
   @Post('signup/admin')
