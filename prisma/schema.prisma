@@ -34,10 +34,10 @@ type InfoBarbearia {
   numero                  Int
   horarioAbertura         String
   horarioFechamento       String
-  fotosEstruturaBarbearia String @default("")
-  fotoBanner              String @default("")
-  logo                    String @default("")
-  status                  String @default("Fechado")
+  fotosEstruturaBarbearia String[] @default([""])
+  fotoBanner              String   @default("")
+  logo                    String   @default("")
+  status                  String   @default("Fechado")
 }
 
 type Servicos {

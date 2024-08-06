@@ -18,7 +18,7 @@ export class SignUpAdminDto {
     numero: number;
     horarioAbertura: string;
     horarioFechamento: string;
-    fotosEstruturaBarbearia?: string;
+    fotosEstruturaBarbearia?: string[];
     fotoBanner?: string;
     logo?: string;
     status?: string;
