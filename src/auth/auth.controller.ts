@@ -2,11 +2,13 @@ import {
   Body,
   Controller,
   Get,
-  Param,
   Post,
+  Req,
+  Res,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { WrapResponseInterceptor } from './common/interceptor/wrap-response.interceptor';
 import { LoginDto, SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
@@ -23,30 +25,51 @@ export class AuthController {
 
   @Post('login/admin')
   @UsePipes(new ZodValidationPipe(LoginSchema))
-  async loginAdmin(@Body() authPayload: LoginDto) {
+  async loginAdmin(@Body() authPayload: LoginDto, @Res() response: Response) {
     const { access_token, refresh_token } =
       await this.authService.loginAdmin(authPayload);
-    return {
+
+    response.cookie('access_token', access_token, {
+      httpOnly: true,
+      secure: true,
+    });
+
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: true,
+    });
+
+    return response.status(200).json({
       message: 'Bem-Vindo !',
-      access_token,
-      refresh_token,
-    };
+      signedIn: true,
+    });
   }
 
   @Post('login/barber')
   @UsePipes(new ZodValidationPipe(LoginSchema))
-  async loginBarber(@Body() authPayload: LoginDto) {
+  async loginBarber(@Body() authPayload: LoginDto, @Res() response: Response) {
     const { access_token, refresh_token } =
       await this.authService.loginBarber(authPayload);
-    return {
+
+    response.cookie('access_token', access_token, {
+      httpOnly: true,
+      secure: true,
+    });
+
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: true,
+    });
+
+    return response.status(200).json({
       message: 'Bem-Vindo !',
-      access_token,
-      refresh_token,
-    };
+      signedIn: true,
+    });
   }
 
-  @Get('barber/:refreshToken')
-  async refreshBarber(@Param('refreshToken') refreshToken: string) {
+  @Get('barber')
+  async refreshBarber(@Req() request: Request) {
+    const { refresh_token: refreshToken } = request.cookies;
     const { access_token, refresh_token } =
       await this.authService.refreshBarber(refreshToken);
 
@@ -57,8 +80,9 @@ export class AuthController {
     };
   }
 
-  @Get('admin/:refreshToken')
-  async refreshBarbershop(@Param('refreshToken') refreshToken: string) {
+  @Get('admin')
+  async refreshBarbershop(@Req() request: Request) {
+    const { refresh_token: refreshToken } = request.cookies;
     const { access_token, refresh_token } =
       await this.authService.refreshBarbershop(refreshToken);
 
