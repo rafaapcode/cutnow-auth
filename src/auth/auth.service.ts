@@ -1,9 +1,9 @@
 import {
+  BadRequestException,
   HttpException,
   HttpStatus,
   Injectable,
   InternalServerErrorException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -31,7 +31,7 @@ export class AuthService {
       );
 
       if (!isValidPassword) {
-        throw new UnauthorizedException('Senha incorreta');
+        throw new BadRequestException('Senha incorreta');
       }
 
       const payload = {
@@ -57,7 +57,7 @@ export class AuthService {
     } catch (error) {
       console.log(error.message);
       if (error.message == 'Senha incorreta') {
-        throw new UnauthorizedException('Senha incorreta');
+        throw new BadRequestException('Senha incorreta');
       }
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
@@ -72,7 +72,7 @@ export class AuthService {
       );
 
       if (!isValidPassword) {
-        throw new UnauthorizedException('Senha incorreta');
+        throw new BadRequestException('Senha incorreta');
       }
 
       const payload = {
@@ -97,7 +97,7 @@ export class AuthService {
     } catch (error) {
       console.log(error.message);
       if (error.message == 'Senha incorreta') {
-        throw new UnauthorizedException('Senha incorreta');
+        throw new BadRequestException('Senha incorreta');
       }
       throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
@@ -110,7 +110,7 @@ export class AuthService {
       });
 
       if (!payload) {
-        throw new UnauthorizedException('Invalid Token');
+        throw new BadRequestException('Invalid Token');
       }
       const user = await this.databaseService.findBarber(payload.email);
       const newPayload = {
@@ -142,7 +142,7 @@ export class AuthService {
       });
 
       if (!payload) {
-        throw new UnauthorizedException('Invalid Token');
+        throw new BadRequestException('Invalid Token');
       }
       const user = await this.databaseService.findBarbershop(payload.email);
       const { id, email, nomeDaBarbearia, lat, lng } = user;

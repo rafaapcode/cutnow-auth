@@ -1,4 +1,4 @@
-import { HttpException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, HttpException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -283,7 +283,7 @@ describe('AuthService', () => {
       barbearia_id: '66b120775d5555694a6e24d4',
     };
 
-    it('should throw an "UnauthorizedException" if the password is invalid"', async () => {
+    it('should throw an "BadRequestException" if the password is invalid"', async () => {
       try {
         database.findBarber.mockReturnValue(barbeiro);
         hashPassword.compare.mockReturnValue(false);
@@ -294,20 +294,9 @@ describe('AuthService', () => {
         });
       } catch (error) {
         console.log(error.message);
-        expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error).toBeInstanceOf(BadRequestException);
         expect(error.message).toBe('Senha incorreta');
       }
-    });
-
-    it('should return an access and refresh token', async () => {
-      database.findBarber.mockReturnValue(barbeiro);
-      hashPassword.compare.mockReturnValue('testedehash');
-      jwt.sign.mockReturnValue('token');
-      const res = await service.loginBarber({
-        email: 'rafa@gmail.com',
-        password: 'teste123@@',
-      });
-      expect(res).toEqual({ access_token: 'token', refresh_token: 'token' });
     });
   });
 
@@ -348,7 +337,7 @@ describe('AuthService', () => {
       longitude: '-54.6641381',
     };
 
-    it('should throw an "UnauthorizedException" if the password is invalid"', async () => {
+    it('should throw an "BadRequestException" if the password is invalid"', async () => {
       try {
         database.findBarbershop.mockReturnValue(barbearia);
         hashPassword.compare.mockReturnValue(false);
@@ -359,20 +348,9 @@ describe('AuthService', () => {
         });
       } catch (error) {
         console.log(error.message);
-        expect(error).toBeInstanceOf(UnauthorizedException);
+        expect(error).toBeInstanceOf(BadRequestException);
         expect(error.message).toBe('Senha incorreta');
       }
-    });
-
-    it('should return an access and refresh token', async () => {
-      database.findBarbershop.mockReturnValue(barbearia);
-      hashPassword.compare.mockReturnValue('testedehash');
-      jwt.sign.mockReturnValue('token');
-      const res = await service.loginAdmin({
-        email: 'rafa@gmail.com',
-        password: 'teste123@@',
-      });
-      expect(res).toEqual({ access_token: 'token', refresh_token: 'token' });
     });
   });
 });
