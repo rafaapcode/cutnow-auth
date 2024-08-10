@@ -37,9 +37,6 @@ export class AuthService {
       const payload = {
         id: barber.id,
         email: barber.email,
-        barbeariaId: barber.barbearia_id,
-        status: barber.status,
-        cpf: barber.cpf,
       };
 
       const { senha, ...info } = barber;
@@ -78,8 +75,6 @@ export class AuthService {
       const payload = {
         id: barbearia.id,
         email: barbearia.email,
-        lat: barbearia.lat,
-        lng: barbearia.lng,
       };
 
       const { senha, ...info } = barbearia;
@@ -103,7 +98,7 @@ export class AuthService {
     }
   }
 
-  async refreshBarber(refreshToken: string) {
+  async refresh(refreshToken: string) {
     try {
       const payload = this.jwtService.verify(refreshToken, {
         secret: this.config.getOrThrow('REFRESH_SECRET'),
@@ -112,13 +107,9 @@ export class AuthService {
       if (!payload) {
         throw new BadRequestException('Invalid Token');
       }
-      const user = await this.databaseService.findBarber(payload.email);
       const newPayload = {
-        id: user.id,
-        email: user.email,
-        barbearia_id: user.barbearia_id,
-        status: user.status,
-        cpf: user.cpf,
+        id: payload.id,
+        email: payload.email,
       };
       const access_token = this.jwtService.sign(newPayload, {
         secret: this.config.getOrThrow('JWT_SECRET'),
@@ -128,38 +119,6 @@ export class AuthService {
         secret: this.config.getOrThrow('REFRESH_SECRET'),
         expiresIn: '7d',
       });
-      return { access_token, refresh_token };
-    } catch (error) {
-      console.log(error.message);
-      throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
-
-  async refreshBarbershop(refreshToken: string) {
-    try {
-      const payload = this.jwtService.verify(refreshToken, {
-        secret: this.config.getOrThrow('REFRESH_SECRET'),
-      });
-
-      if (!payload) {
-        throw new BadRequestException('Invalid Token');
-      }
-      const user = await this.databaseService.findBarbershop(payload.email);
-      const { id, email, nomeDaBarbearia, lat, lng } = user;
-      const access_token = this.jwtService.sign(
-        { id, email, nomeDaBarbearia, lat, lng },
-        {
-          secret: this.config.getOrThrow('JWT_SECRET'),
-          expiresIn: '2h',
-        },
-      );
-      const refresh_token = this.jwtService.sign(
-        { id, email, nomeDaBarbearia, lat, lng },
-        {
-          secret: this.config.getOrThrow('REFRESH_SECRET'),
-          expiresIn: '7d',
-        },
-      );
       return { access_token, refresh_token };
     } catch (error) {
       console.log(error.message);

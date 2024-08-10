@@ -106,11 +106,11 @@ export class AuthController {
     });
   }
 
-  @Get('barber')
-  async refreshBarber(@Req() request: Request, @Res() response: Response) {
+  @Get('refresh')
+  async refresh(@Req() request: Request, @Res() response: Response) {
     const { refresh_token: refreshToken } = request.cookies;
     const { access_token, refresh_token } =
-      await this.authService.refreshBarber(refreshToken);
+      await this.authService.refresh(refreshToken);
     response.cookie('access_token', access_token, {
       httpOnly: true,
       secure: true,
@@ -120,27 +120,6 @@ export class AuthController {
       httpOnly: true,
       secure: true,
     });
-    return {
-      message: 'Tokens Atualizados com sucesso!',
-    };
-  }
-
-  @Get('admin')
-  async refreshBarbershop(@Req() request: Request, @Res() response: Response) {
-    const { refresh_token: refreshToken } = request.cookies;
-    const { access_token, refresh_token } =
-      await this.authService.refreshBarbershop(refreshToken);
-
-    response.cookie('access_token', access_token, {
-      httpOnly: true,
-      secure: true,
-    });
-
-    response.cookie('refresh_token', refresh_token, {
-      httpOnly: true,
-      secure: true,
-    });
-
     return {
       message: 'Tokens Atualizados com sucesso!',
     };
