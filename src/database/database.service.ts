@@ -148,7 +148,6 @@ export class DatabaseService {
       if (!barbearia) {
         throw new NotFoundException('Barbearia não encontrada !');
       }
-      console.log(barbearia);
       return {
         ...barbearia,
         id: barbearia.id,
