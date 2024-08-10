@@ -107,28 +107,42 @@ export class AuthController {
   }
 
   @Get('barber')
-  async refreshBarber(@Req() request: Request) {
+  async refreshBarber(@Req() request: Request, @Res() response: Response) {
     const { refresh_token: refreshToken } = request.cookies;
     const { access_token, refresh_token } =
       await this.authService.refreshBarber(refreshToken);
+    response.cookie('access_token', access_token, {
+      httpOnly: true,
+      secure: true,
+    });
 
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: true,
+    });
     return {
       message: 'Tokens Atualizados com sucesso!',
-      access_token,
-      refresh_token,
     };
   }
 
   @Get('admin')
-  async refreshBarbershop(@Req() request: Request) {
+  async refreshBarbershop(@Req() request: Request, @Res() response: Response) {
     const { refresh_token: refreshToken } = request.cookies;
     const { access_token, refresh_token } =
       await this.authService.refreshBarbershop(refreshToken);
 
+    response.cookie('access_token', access_token, {
+      httpOnly: true,
+      secure: true,
+    });
+
+    response.cookie('refresh_token', refresh_token, {
+      httpOnly: true,
+      secure: true,
+    });
+
     return {
       message: 'Tokens Atualizados com sucesso!',
-      access_token,
-      refresh_token,
     };
   }
 

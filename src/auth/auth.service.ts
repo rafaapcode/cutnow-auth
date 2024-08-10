@@ -113,7 +113,13 @@ export class AuthService {
         throw new UnauthorizedException('Invalid Token');
       }
       const user = await this.databaseService.findBarber(payload.email);
-      const { senha, ...newPayload } = user;
+      const newPayload = {
+        id: user.id,
+        email: user.email,
+        barbearia_id: user.barbearia_id,
+        status: user.status,
+        cpf: user.cpf,
+      };
       const access_token = this.jwtService.sign(newPayload, {
         secret: this.config.getOrThrow('JWT_SECRET'),
         expiresIn: '2h',
@@ -139,15 +145,21 @@ export class AuthService {
         throw new UnauthorizedException('Invalid Token');
       }
       const user = await this.databaseService.findBarbershop(payload.email);
-      const { senha, ...newPayload } = user;
-      const access_token = this.jwtService.sign(newPayload, {
-        secret: this.config.getOrThrow('JWT_SECRET'),
-        expiresIn: '2h',
-      });
-      const refresh_token = this.jwtService.sign(newPayload, {
-        secret: this.config.getOrThrow('REFRESH_SECRET'),
-        expiresIn: '7d',
-      });
+      const { id, email, nomeDaBarbearia, lat, lng } = user;
+      const access_token = this.jwtService.sign(
+        { id, email, nomeDaBarbearia, lat, lng },
+        {
+          secret: this.config.getOrThrow('JWT_SECRET'),
+          expiresIn: '2h',
+        },
+      );
+      const refresh_token = this.jwtService.sign(
+        { id, email, nomeDaBarbearia, lat, lng },
+        {
+          secret: this.config.getOrThrow('REFRESH_SECRET'),
+          expiresIn: '7d',
+        },
+      );
       return { access_token, refresh_token };
     } catch (error) {
       console.log(error.message);
