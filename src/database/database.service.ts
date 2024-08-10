@@ -48,9 +48,10 @@ export class DatabaseService {
         throw new NotFoundException('Barbeiro não encontrado !');
       }
       return {
+        ...barber,
         id: barber.id,
         email: barber.email,
-        barbeariaId: barber.barbearia_id,
+        barbearia_id: barber.barbearia_id,
         status: barber.status,
         cpf: barber.cpf,
         senha: barber.senha,
@@ -147,9 +148,12 @@ export class DatabaseService {
       if (!barbearia) {
         throw new NotFoundException('Barbearia não encontrada !');
       }
+      console.log(barbearia);
       return {
+        ...barbearia,
         id: barbearia.id,
         email: barbearia.email,
+        nomeDaBarbearia: barbearia.nomeDaBarbearia,
         lat: barbearia.latitude,
         lng: barbearia.longitude,
         senha: barbearia.senha,

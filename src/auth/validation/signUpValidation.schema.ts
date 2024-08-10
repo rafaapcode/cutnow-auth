@@ -92,9 +92,9 @@ export const signUpBarberSchema = z.object({
         .url({ message: 'Deve ser urls' })
         .array()
         .optional(),
-      banner: z.string().url({ message: 'Deve ser urls' }).optional(),
-      foto: z.string().url({ message: 'Deve ser urls' }).optional(),
-      descricao: z.string().url({ message: 'Deve ser urls' }).optional(),
+      banner: z.string().url({ message: 'Deve ser url' }).optional(),
+      foto: z.string().url({ message: 'Deve ser url' }).optional(),
+      descricao: z.string().url({ message: 'Deve ser url' }).optional(),
     })
     .optional(),
 });

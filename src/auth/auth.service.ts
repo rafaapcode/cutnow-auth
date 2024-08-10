@@ -37,10 +37,13 @@ export class AuthService {
       const payload = {
         id: barber.id,
         email: barber.email,
-        barbeariaId: barber.barbeariaId,
+        barbeariaId: barber.barbearia_id,
         status: barber.status,
         cpf: barber.cpf,
       };
+
+      const { senha, ...info } = barber;
+
       const access_token = this.jwtService.sign(payload, {
         secret: this.config.getOrThrow('JWT_SECRET'),
         expiresIn: '2h',
@@ -50,7 +53,7 @@ export class AuthService {
         expiresIn: '7d',
       });
 
-      return { access_token, refresh_token };
+      return { access_token, refresh_token, payload: info };
     } catch (error) {
       console.log(error.message);
       if (error.message == 'Senha incorreta') {
@@ -79,6 +82,8 @@ export class AuthService {
         lng: barbearia.lng,
       };
 
+      const { senha, ...info } = barbearia;
+
       const access_token = this.jwtService.sign(payload, {
         secret: this.config.getOrThrow('JWT_SECRET'),
         expiresIn: '2h',
@@ -88,7 +93,7 @@ export class AuthService {
         expiresIn: '7d',
       });
 
-      return { access_token, refresh_token };
+      return { access_token, refresh_token, payload: info };
     } catch (error) {
       console.log(error.message);
       if (error.message == 'Senha incorreta') {

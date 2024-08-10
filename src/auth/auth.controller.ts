@@ -43,7 +43,7 @@ export class AuthController {
   @Post('login/admin')
   @UsePipes(new ZodValidationPipe(LoginSchema))
   async loginAdmin(@Body() authPayload: LoginDto, @Res() response: Response) {
-    const { access_token, refresh_token } =
+    const { access_token, refresh_token, payload } =
       await this.authService.loginAdmin(authPayload);
 
     response.cookie('access_token', access_token, {
@@ -59,13 +59,14 @@ export class AuthController {
     return response.status(200).json({
       message: 'Bem-Vindo !',
       signedIn: true,
+      data: payload,
     });
   }
 
   @Post('login/barber')
   @UsePipes(new ZodValidationPipe(LoginSchema))
   async loginBarber(@Body() authPayload: LoginDto, @Res() response: Response) {
-    const { access_token, refresh_token } =
+    const { access_token, refresh_token, payload } =
       await this.authService.loginBarber(authPayload);
 
     response.cookie('access_token', access_token, {
@@ -81,6 +82,7 @@ export class AuthController {
     return response.status(200).json({
       message: 'Bem-Vindo !',
       signedIn: true,
+      data: payload,
     });
   }
 
