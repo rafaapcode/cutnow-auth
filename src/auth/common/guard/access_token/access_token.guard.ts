@@ -19,20 +19,24 @@ export class AccessTokenGuard implements CanActivate {
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const request = context.switchToHttp().getRequest<Request>();
-    const { access_token } = request.cookies;
-    if (!access_token) {
-      throw new UnauthorizedException('Nenhum token encontrado');
+    try {
+      const request = context.switchToHttp().getRequest<Request>();
+      const access_token = request.headers.authorization;
+      if (!access_token) {
+        throw new UnauthorizedException('Nenhum token encontrado');
+      }
+
+      const payload = this.jwtService.verify(access_token, {
+        secret: this.config.getOrThrow('JWT_SECRET'),
+      });
+
+      if (!payload) {
+        throw new UnauthorizedException('Token inválido');
+      }
+
+      return true;
+    } catch (error: any) {
+      throw new UnauthorizedException(error.message);
     }
-
-    const payload = this.jwtService.verify(access_token, {
-      secret: this.config.getOrThrow('JWT_SECRET'),
-    });
-
-    if (!payload) {
-      throw new UnauthorizedException('Token inválido');
-    }
-
-    return true;
   }
 }

@@ -51,11 +51,15 @@ export class AuthController {
     response.cookie('access_token', access_token, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
+      domain: '*',
     });
 
     response.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
+      domain: '*',
     });
 
     return response.status(200).json({
@@ -74,11 +78,15 @@ export class AuthController {
     response.cookie('access_token', access_token, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
+      domain: '*',
     });
 
     response.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
+      domain: '*',
     });
 
     return response.status(200).json({
@@ -110,17 +118,19 @@ export class AuthController {
 
   @Get('refresh')
   async refresh(@Req() request: Request, @Res() response: Response) {
-    const { refresh_token: refreshToken } = request.cookies;
+    const refreshToken = request.headers.authorization;
     const { access_token, refresh_token } =
       await this.authService.refresh(refreshToken);
     response.cookie('access_token', access_token, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
     });
 
     response.cookie('refresh_token', refresh_token, {
       httpOnly: true,
       secure: true,
+      sameSite: 'none',
     });
     return {
       message: 'Tokens Atualizados com sucesso!',
