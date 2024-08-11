@@ -5,11 +5,13 @@ import {
   Post,
   Req,
   Res,
+  UseGuards,
   UseInterceptors,
   UsePipes,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
+import { AccessTokenGuard } from './common/guard/access_token/access_token.guard';
 import { WrapResponseInterceptor } from './common/interceptor/wrap-response.interceptor';
 import { LoginDto, SignUpAdminDto, SignUpBarberDto } from './dto/auth.dto';
 import { ZodValidationPipe } from './validation.pipe';
@@ -134,6 +136,7 @@ export class AuthController {
   }
 
   @Post('signup/barber')
+  @UseGuards(AccessTokenGuard)
   @UsePipes(new ZodValidationPipe(signUpBarberSchema))
   @UseInterceptors(new WrapResponseInterceptor())
   async signupBarber(@Body() body: SignUpBarberDto) {
