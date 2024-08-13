@@ -9,6 +9,6 @@ async function bootstrap() {
     origin: '*',
   });
   app.use(cookieParser());
-  await app.listen(8080);
+  await app.listen(process.env.PORT);
 }
 bootstrap();
