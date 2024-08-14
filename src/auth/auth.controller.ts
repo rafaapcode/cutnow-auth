@@ -25,23 +25,6 @@ import {
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Get()
-  async isAuth(@Req() request: Request) {
-    const { access_token } = request.cookies;
-
-    if (!access_token) {
-      return {
-        message: 'Não está autenticado !',
-        signedIn: false,
-      };
-    }
-
-    return {
-      message: 'Está autenticado !',
-      signedIn: true,
-    };
-  }
-
   @Post('login/admin')
   @UsePipes(new ZodValidationPipe(LoginSchema))
   async loginAdmin(@Body() authPayload: LoginDto, @Res() response: Response) {
@@ -93,26 +76,6 @@ export class AuthController {
       message: 'Bem-Vindo !',
       signedIn: true,
       data: payload,
-    });
-  }
-
-  @Get('signOut')
-  async signOut(@Req() request: Request, @Res() response: Response) {
-    const { access_token } = request.cookies;
-
-    if (!access_token) {
-      return response.status(200).json({
-        message: 'Você não está logado !',
-        signedIn: false,
-      });
-    }
-
-    response.clearCookie('access_token');
-    response.clearCookie('refresh_token');
-
-    return response.status(200).json({
-      message: 'Você saiu !',
-      signedIn: false,
     });
   }
 

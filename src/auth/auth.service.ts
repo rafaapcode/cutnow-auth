@@ -77,8 +77,7 @@ export class AuthService {
         email: barbearia.email,
       };
 
-      const { senha, ...info } = barbearia;
-
+      const { senha, latitude, longitude, ...info } = barbearia;
       const access_token = this.jwtService.sign(payload, {
         secret: this.config.getOrThrow('JWT_SECRET'),
         expiresIn: '2h',
