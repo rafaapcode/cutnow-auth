@@ -88,6 +88,7 @@ export class DatabaseService {
   async findUniqueBarbershop(
     email: string,
     nomeDaBarbearia: string,
+    cnpj: string,
   ): Promise<Barbearia> {
     try {
       const barbearia = await this.prismaService.barbearia.findFirst({
@@ -98,6 +99,9 @@ export class DatabaseService {
             },
             {
               nomeDaBarbearia,
+            },
+            {
+              cnpj,
             },
           ],
         },

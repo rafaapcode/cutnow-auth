@@ -159,6 +159,7 @@ export class AuthService {
       const adminExist = await this.databaseService.findUniqueBarbershop(
         admin.email,
         admin.nomeDaBarbearia,
+        admin.cnpj,
       );
       if (adminExist) {
         throw new HttpException('Barbearia já existe', HttpStatus.BAD_REQUEST);
