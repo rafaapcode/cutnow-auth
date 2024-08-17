@@ -3,7 +3,9 @@ export class UpdateBarbershopDto {
   nome: string;
   nomeDaBarbearia: string;
   cnpj: string;
-  informacoes: {
+  latitude: string;
+  longitude: string;
+  informacoes?: {
     cep: string;
     rua: string;
     bairro: string;

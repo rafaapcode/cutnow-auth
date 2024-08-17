@@ -1,7 +1,7 @@
+import { validateCEP, validateCnpj } from 'src/auth/lib/utils';
 import { z } from 'zod';
-import { validateCEP, validateCnpj } from '../../auth/lib/utils';
 
-export const signUpAdminSchema = z
+export const UpdateAdminSchema = z
   .object({
     nome: z
       .string({ message: 'O nome é obrigatório.' })
@@ -29,7 +29,6 @@ export const signUpAdminSchema = z
           .string({ message: 'O CEP é obrigatório.' })
           .min(8, 'O CEP deve ter no mínimo 8 caracteres')
           .max(8, 'O cep deve ter no máximo 8 caracteres')
-          .optional()
           .refine(validateCEP, 'Coloque um CEP válido')
           .optional(),
         rua: z.string().optional(),

@@ -6,11 +6,16 @@ import {
 } from '@nestjs/common';
 import { Barbearia, Barbeiro } from '@prisma/client';
 import { SignUpAdminDto, SignUpBarberDto } from 'src/auth/dto/auth.dto';
+import { UpdateBarbershopDto } from 'src/barbershop/dto/updateBarbershop';
+import { GeolocationService } from 'src/geolocation/geolocation.service';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
 export class DatabaseService {
-  constructor(private readonly prismaService: PrismaService) {}
+  constructor(
+    private readonly prismaService: PrismaService,
+    private readonly geolocationService: GeolocationService,
+  ) {}
 
   async findUniqueBarber(email: string, cpf: string): Promise<Barbeiro> {
     try {
@@ -195,6 +200,105 @@ export class DatabaseService {
       }
 
       return { status: true };
+    } catch (error) {
+      console.log(error.message);
+      return { status: false, message: error.message };
+    } finally {
+      await this.prismaService.$disconnect();
+    }
+  }
+
+  async updateBarbershop(
+    id: string,
+    updateBody: UpdateBarbershopDto,
+  ): Promise<{ status: boolean; message?: string }> {
+    try {
+      await this.prismaService.$transaction(async (tx) => {
+        const barbearia = await tx.barbearia.findUnique({
+          where: {
+            id,
+          },
+          select: {
+            cnpj: true,
+            email: true,
+            informacoes: {
+              select: {
+                bairro: true,
+                cep: true,
+                cidade: true,
+                estado: true,
+                horarioAbertura: true,
+                horarioFechamento: true,
+                numero: true,
+                rua: true,
+              },
+            },
+            latitude: true,
+            longitude: true,
+            nome: true,
+            nomeDaBarbearia: true,
+          },
+        });
+        if (!barbearia) {
+          return { status: false };
+        }
+
+        const { informacoes: informations, ...otherInfos } = updateBody;
+        const { informacoes, ...infosAboutBarbershop } = barbearia;
+        let latLng = {};
+        if (informations.cep) {
+          const dataResponse = await this.geolocationService.getLatAndLong({
+            bairro: informations.bairro,
+            cep: informations.cep,
+            cidade: informations.cidade,
+            estado: informations.estado,
+            numero: informations.numero,
+            rua: informations.rua,
+          });
+
+          const { lat, lng } = dataResponse.geometry.location;
+
+          latLng = {
+            latitude: `${lat}`,
+            longitude: `${lng}`,
+          };
+        }
+
+        const newData = {
+          ...infosAboutBarbershop,
+          ...otherInfos,
+          ...latLng,
+        };
+
+        const newInformations = {
+          ...informacoes,
+          ...informations,
+        };
+
+        await tx.barbearia.update({
+          where: {
+            id,
+          },
+          data: {
+            ...newData,
+          },
+        });
+
+        await tx.barbearia.update({
+          where: {
+            id,
+          },
+          data: {
+            informacoes: {
+              update: {
+                ...newInformations,
+              },
+            },
+          },
+        });
+      });
+
+      return { status: true, message: 'Dados atualizados com sucesso !' };
     } catch (error) {
       console.log(error.message);
       return { status: false, message: error.message };
