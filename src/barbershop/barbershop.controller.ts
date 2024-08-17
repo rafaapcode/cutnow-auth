@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Put, UsePipes } from '@nestjs/common';
+import { Body, Controller, Param, Put } from '@nestjs/common';
 import { BarbershopService } from './barbershop.service';
 import { UpdateBarbershopDto } from './dto/updateBarbershop';
 import { ZodValidationPipe } from './validation.pipe';
@@ -10,10 +10,10 @@ export class BarbershopController {
 
   @Put(':id')
   // @UseGuards(AccessTokenGuard)
-  @UsePipes(new ZodValidationPipe(UpdateAdminSchema))
   async updateInfoBarbershop(
     @Param('id') id: string,
-    @Body() updateBody: UpdateBarbershopDto,
+    @Body(new ZodValidationPipe(UpdateAdminSchema))
+    updateBody: UpdateBarbershopDto,
   ) {
     const updateStatus = await this.barbershopService.updateBody(
       id,

@@ -25,6 +25,7 @@ export class BarbershopService {
         message: barbershopUpdated.message,
       };
     } catch (error) {
+      console.log(error);
       throw new InternalServerErrorException(error.message);
     }
   }

@@ -246,7 +246,7 @@ export class DatabaseService {
         const { informacoes: informations, ...otherInfos } = updateBody;
         const { informacoes, ...infosAboutBarbershop } = barbearia;
         let latLng = {};
-        if (informations.cep) {
+        if (informations && informations.cep) {
           const dataResponse = await this.geolocationService.getLatAndLong({
             bairro: informations.bairro,
             cep: informations.cep,
@@ -300,7 +300,7 @@ export class DatabaseService {
 
       return { status: true, message: 'Dados atualizados com sucesso !' };
     } catch (error) {
-      console.log(error.message);
+      console.log('Database Error: ', error.message);
       return { status: false, message: error.message };
     } finally {
       await this.prismaService.$disconnect();
