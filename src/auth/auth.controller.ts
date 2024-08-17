@@ -1,9 +1,10 @@
 import {
+  BadRequestException,
   Body,
   Controller,
   Get,
-  Param,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -118,24 +119,22 @@ export class AuthController {
     return res;
   }
 
-  @Get('findBarbershopByEmail/:email')
-  async findBarbershopByEmail(@Param('email') email: string) {
-    const barbershop = await this.authService.verifyBarbershopByEmail(email);
+  @Get('verfifyBarbershop')
+  async verifyBarbershop(@Query() queryParam: any) {
+    const { email, nome, cnpj } = queryParam;
+    try {
+      if (!email || !nome || !cnpj) {
+        return { status: false };
+      }
 
-    return barbershop;
-  }
-
-  @Get('findBarbershopByName/:name')
-  async findBarbershopByName(@Param('name') name: string) {
-    const barbershop = await this.authService.verifyBarbershopByName(name);
-
-    return barbershop;
-  }
-
-  @Get('findBarbershopByCnpj/:cnpj')
-  async findBarbershopByCnpj(@Param('cnpj') cnpj: string) {
-    const barbershop = await this.authService.verifyBarbershopByCnpj(cnpj);
-
-    return barbershop;
+      const barbershop = await this.authService.verifyBarbershop(
+        queryParam.email,
+        queryParam.nome,
+        queryParam.cnpj,
+      );
+      return barbershop;
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 }

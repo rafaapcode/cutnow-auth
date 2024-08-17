@@ -15,9 +15,7 @@ const createMockDatabase = (): MockDatabase => ({
   findUniqueBarbershop: jest.fn(),
   findBarber: jest.fn(),
   findBarbershop: jest.fn(),
-  findBarbershopByCnpj: jest.fn(),
-  findBarbershopByEmail: jest.fn(),
-  findBarbershopByNameOfBarbershop: jest.fn(),
+  verfifyBarbershop: jest.fn(),
 });
 
 type MockHash = Partial<Record<keyof HashPasswordService, jest.Mock>>;
@@ -367,40 +365,62 @@ describe('AuthService', () => {
     };
 
     it('should return a status "FALSE" if barbershop not exist ( FINDING BY EMAIL )', async () => {
-      database.findBarbershopByEmail.mockReturnValue(barbeariaNotExist);
-      const res = await service.verifyBarbershopByEmail('rafael203@gmail.com');
+      database.verfifyBarbershop.mockReturnValue(barbeariaNotExist);
+      const res = await service.verifyBarbershop(
+        'rafael203@gmail.com',
+        'barbers',
+        '1231414141',
+      );
       expect(res.status).toBeFalsy();
     });
 
     it('should return a status "TRUE" if barbershop exist ( FINDING BY EMAIL )', async () => {
-      database.findBarbershopByEmail.mockReturnValue(barbeariaExist);
-      const res = await service.verifyBarbershopByEmail('rafa@gmail.com');
+      database.verfifyBarbershop.mockReturnValue(barbeariaExist);
+      const res = await service.verifyBarbershop(
+        'rafa@gmail.com',
+        'barbers',
+        '64749905000141',
+      );
       expect(res.status).toBeTruthy();
     });
 
     it('should return a status "FALSE" if barbershop not exist ( FINDING BY NAME )', async () => {
-      database.findBarbershopByNameOfBarbershop.mockReturnValue(
-        barbeariaNotExist,
+      database.verfifyBarbershop.mockReturnValue(barbeariaNotExist);
+      const res = await service.verifyBarbershop(
+        'rafa@gmail.com',
+        'barbersss',
+        '64749905000141',
       );
-      const res = await service.verifyBarbershopByName('barbeiros');
       expect(res.status).toBeFalsy();
     });
 
     it('should return a status "TRUE" if barbershop exist ( FINDING BY NAME )', async () => {
-      database.findBarbershopByNameOfBarbershop.mockReturnValue(barbeariaExist);
-      const res = await service.verifyBarbershopByName('barberss');
+      database.verfifyBarbershop.mockReturnValue(barbeariaExist);
+      const res = await service.verifyBarbershop(
+        'rafa@gmail.com',
+        'barbers',
+        '64749905000141',
+      );
       expect(res.status).toBeTruthy();
     });
 
     it('should return a status "FALSE" if barbershop not exist ( FINDING BY CNPJ )', async () => {
-      database.findBarbershopByCnpj.mockReturnValue(barbeariaNotExist);
-      const res = await service.verifyBarbershopByCnpj('12345678');
+      database.verfifyBarbershop.mockReturnValue(barbeariaNotExist);
+      const res = await service.verifyBarbershop(
+        'rafa@gmail.com',
+        'barbers',
+        '123123113',
+      );
       expect(res.status).toBeFalsy();
     });
 
     it('should return a status "TRUE" if barbershop exist ( FINDING BY CNPJ )', async () => {
-      database.findBarbershopByCnpj.mockReturnValue(barbeariaExist);
-      const res = await service.verifyBarbershopByCnpj('64749905000141');
+      database.verfifyBarbershop.mockReturnValue(barbeariaExist);
+      const res = await service.verifyBarbershop(
+        'rafa@gmail.com',
+        'barbers',
+        '64749905000141',
+      );
       expect(res.status).toBeTruthy();
     });
   });

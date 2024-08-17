@@ -169,88 +169,35 @@ export class DatabaseService {
     }
   }
 
-  async findBarbershopByEmail(
+  async verfifyBarbershop(
     email: string,
-  ): Promise<{ status: boolean; message?: string }> {
-    try {
-      const barbearia = await this.prismaService.barbearia.findUnique({
-        where: {
-          email,
-        },
-      });
-
-      if (!barbearia) {
-        return {
-          status: false,
-        };
-      }
-      return {
-        status: true,
-      };
-    } catch (error) {
-      console.log(error.message);
-      return {
-        status: false,
-        message: error.message,
-      };
-    } finally {
-      await this.prismaService.$disconnect();
-    }
-  }
-
-  async findBarbershopByNameOfBarbershop(
     nomeDaBarbearia: string,
-  ): Promise<{ status: boolean; message?: string }> {
-    try {
-      const barbearia = await this.prismaService.barbearia.findUnique({
-        where: {
-          nomeDaBarbearia,
-        },
-      });
-
-      if (!barbearia) {
-        return {
-          status: false,
-        };
-      }
-      return {
-        status: true,
-      };
-    } catch (error) {
-      console.log(error.message);
-      return {
-        status: false,
-        message: error.message,
-      };
-    } finally {
-      await this.prismaService.$disconnect();
-    }
-  }
-
-  async findBarbershopByCnpj(
     cnpj: string,
   ): Promise<{ status: boolean; message?: string }> {
     try {
-      const barbearia = await this.prismaService.barbearia.findUnique({
+      const barbearia = await this.prismaService.barbearia.findFirst({
         where: {
-          cnpj,
+          AND: [
+            {
+              email,
+            },
+            {
+              nomeDaBarbearia,
+            },
+            {
+              cnpj,
+            },
+          ],
         },
       });
-
       if (!barbearia) {
-        return {
-          status: false,
-        };
+        return { status: false };
       }
-      return {
-        status: true,
-      };
+
+      return { status: true };
     } catch (error) {
       console.log(error.message);
-      return {
-        status: false,
-        message: error.message,
-      };
+      return { status: false, message: error.message };
     } finally {
       await this.prismaService.$disconnect();
     }

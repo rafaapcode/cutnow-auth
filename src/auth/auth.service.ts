@@ -194,50 +194,16 @@ export class AuthService {
     }
   }
 
-  async verifyBarbershopByEmail(
+  async verifyBarbershop(
     email: string,
-  ): Promise<{ status: boolean; message?: string }> {
-    try {
-      const barbershop =
-        await this.databaseService.findBarbershopByEmail(email);
-      return barbershop;
-    } catch (err) {
-      console.log(err.message);
-      return {
-        status: false,
-        message: err.message,
-      };
-    }
-  }
-
-  async verifyBarbershopByName(
-    name: string,
-  ): Promise<{ status: boolean; message?: string }> {
-    try {
-      const barbershop =
-        await this.databaseService.findBarbershopByNameOfBarbershop(name);
-      return barbershop;
-    } catch (err) {
-      console.log(err.message);
-      return {
-        status: false,
-        message: err.message,
-      };
-    }
-  }
-
-  async verifyBarbershopByCnpj(
+    nomeDaBarbearia: string,
     cnpj: string,
   ): Promise<{ status: boolean; message?: string }> {
-    try {
-      const barbershop = await this.databaseService.findBarbershopByCnpj(cnpj);
-      return barbershop;
-    } catch (err) {
-      console.log(err.message);
-      return {
-        status: false,
-        message: err.message,
-      };
-    }
+    const barbeariaExists = await this.databaseService.verfifyBarbershop(
+      email,
+      nomeDaBarbearia,
+      cnpj,
+    );
+    return barbeariaExists;
   }
 }
