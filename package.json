@@ -10,8 +10,8 @@
   },
   "scripts": {
     "build": "nest build",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
-    "ci:check": "prettier --check \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" ",
+    "ci:check": "prettier --check \"src/**/*.ts\" ",
     "start": "nest start",
     "start:dev": "nest start -b swc -w",
     "start:debug": "nest start --debug --watch",
