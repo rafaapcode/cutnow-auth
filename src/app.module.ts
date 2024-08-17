@@ -4,6 +4,7 @@ import { AuthModule } from './auth/auth.module';
 import { HashPasswordModule } from './hash-password/hash-password.module';
 import { GeolocationModule } from './geolocation/geolocation.module';
 import { DatabaseModule } from './database/database.module';
+import { BarbershopModule } from './barbershop/barbershop.module';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { DatabaseModule } from './database/database.module';
     HashPasswordModule,
     GeolocationModule,
     DatabaseModule,
+    BarbershopModule,
   ],
   controllers: [],
   providers: [],
