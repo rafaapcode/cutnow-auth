@@ -15,7 +15,7 @@ model Barbearia {
   senha           String        @db.String
   nome            String        @db.String
   nomeDaBarbearia String        @unique @db.String
-  cnpj            String        @db.String
+  cnpj            String        @unique @db.String
   latitude        String        @db.String
   longitude       String        @db.String
   informacoes     InfoBarbearia

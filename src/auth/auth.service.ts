@@ -193,4 +193,51 @@ export class AuthService {
       throw new InternalServerErrorException(err.message);
     }
   }
+
+  async verifyBarbershopByEmail(
+    email: string,
+  ): Promise<{ status: boolean; message?: string }> {
+    try {
+      const barbershop =
+        await this.databaseService.findBarbershopByEmail(email);
+      return barbershop;
+    } catch (err) {
+      console.log(err.message);
+      return {
+        status: false,
+        message: err.message,
+      };
+    }
+  }
+
+  async verifyBarbershopByName(
+    name: string,
+  ): Promise<{ status: boolean; message?: string }> {
+    try {
+      const barbershop =
+        await this.databaseService.findBarbershopByNameOfBarbershop(name);
+      return barbershop;
+    } catch (err) {
+      console.log(err.message);
+      return {
+        status: false,
+        message: err.message,
+      };
+    }
+  }
+
+  async verifyBarbershopByCnpj(
+    cnpj: string,
+  ): Promise<{ status: boolean; message?: string }> {
+    try {
+      const barbershop = await this.databaseService.findBarbershopByCnpj(cnpj);
+      return barbershop;
+    } catch (err) {
+      console.log(err.message);
+      return {
+        status: false,
+        message: err.message,
+      };
+    }
+  }
 }

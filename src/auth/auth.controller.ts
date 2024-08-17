@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Param,
   Post,
   Req,
   Res,
@@ -115,5 +116,26 @@ export class AuthController {
   async signupBarber(@Body() body: SignUpBarberDto) {
     const res = await this.authService.signupBarber(body);
     return res;
+  }
+
+  @Get('findBarbershopByEmail/:email')
+  async findBarbershopByEmail(@Param('email') email: string) {
+    const barbershop = await this.authService.verifyBarbershopByEmail(email);
+
+    return barbershop;
+  }
+
+  @Get('findBarbershopByName/:name')
+  async findBarbershopByName(@Param('name') name: string) {
+    const barbershop = await this.authService.verifyBarbershopByName(name);
+
+    return barbershop;
+  }
+
+  @Get('findBarbershopByCnpj/:cnpj')
+  async findBarbershopByCnpj(@Param('cnpj') cnpj: string) {
+    const barbershop = await this.authService.verifyBarbershopByCnpj(cnpj);
+
+    return barbershop;
   }
 }
