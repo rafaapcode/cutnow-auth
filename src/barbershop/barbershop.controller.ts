@@ -1,15 +1,16 @@
-import { Body, Controller, Param, Put } from '@nestjs/common';
+import { Body, Controller, Param, Put, UseGuards } from '@nestjs/common';
 import { BarbershopService } from './barbershop.service';
 import { UpdateBarbershopDto } from './dto/updateBarbershop';
 import { ZodValidationPipe } from './validation.pipe';
 import { UpdateAdminSchema } from './validations/updateBodySchema';
+import { AccessTokenGuard } from './common/guard/access_token/access_token.guard';
 
 @Controller('barbershop')
 export class BarbershopController {
   constructor(private readonly barbershopService: BarbershopService) {}
 
   @Put(':id')
-  // @UseGuards(AccessTokenGuard)
+  @UseGuards(AccessTokenGuard)
   async updateInfoBarbershop(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(UpdateAdminSchema))

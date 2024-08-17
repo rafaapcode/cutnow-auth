@@ -6,8 +6,8 @@ import {
 } from '@nestjs/common';
 import { Barbearia, Barbeiro } from '@prisma/client';
 import { SignUpAdminDto, SignUpBarberDto } from 'src/auth/dto/auth.dto';
-import { UpdateBarbershopDto } from 'src/barbershop/dto/updateBarbershop';
-import { GeolocationService } from 'src/geolocation/geolocation.service';
+import { UpdateBarbershopDto } from '../barbershop/dto/updateBarbershop';
+import { GeolocationService } from '../geolocation/geolocation.service';
 import { PrismaService } from '../prisma.service';
 
 @Injectable()
