@@ -37,6 +37,7 @@ export class AuthService {
       const payload = {
         id: barber.id,
         email: barber.email,
+        role: 'barber',
       };
 
       const { senha, ...info } = barber;
@@ -75,6 +76,7 @@ export class AuthService {
       const payload = {
         id: barbearia.id,
         email: barbearia.email,
+        role: 'admin',
       };
 
       const { senha, latitude, longitude, ...info } = barbearia;

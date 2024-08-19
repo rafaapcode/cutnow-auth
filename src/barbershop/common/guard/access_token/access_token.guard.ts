@@ -2,6 +2,7 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  NotAcceptableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -32,6 +33,12 @@ export class AccessTokenGuard implements CanActivate {
 
       if (!payload) {
         throw new UnauthorizedException('Token inválido');
+      }
+
+      if (payload.role !== 'admin') {
+        throw new NotAcceptableException(
+          'Você não possui permissões para acessar essa rota',
+        );
       }
 
       return true;
