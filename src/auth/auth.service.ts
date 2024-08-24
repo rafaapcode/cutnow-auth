@@ -4,6 +4,7 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -201,11 +202,15 @@ export class AuthService {
     nomeDaBarbearia: string,
     cnpj: string,
   ): Promise<{ status: boolean; message?: string }> {
-    const barbeariaExists = await this.databaseService.verfifyBarbershop(
-      email,
-      nomeDaBarbearia,
-      cnpj,
-    );
-    return barbeariaExists;
+    try {
+      const barbeariaExists = await this.databaseService.verfifyBarbershop(
+        email,
+        nomeDaBarbearia,
+        cnpj,
+      );
+      return barbeariaExists;
+    } catch (error) {
+      throw new NotFoundException('Barbearia não encontrada');
+    }
   }
 }

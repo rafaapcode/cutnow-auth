@@ -182,7 +182,7 @@ export class DatabaseService {
     try {
       const barbearia = await this.prismaService.barbearia.findFirst({
         where: {
-          AND: [
+          OR: [
             {
               email,
             },
