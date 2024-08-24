@@ -180,26 +180,25 @@ export class DatabaseService {
     cnpj: string,
   ): Promise<{ status: boolean; message?: string }> {
     try {
-      const barbearia = await this.prismaService.barbearia.findFirst({
-        where: {
-          OR: [
-            {
-              email,
-            },
-            {
-              nomeDaBarbearia,
-            },
-            {
-              cnpj,
-            },
-          ],
-        },
-      });
-      if (!barbearia) {
-        return { status: false };
+      const [seachByEmail, seachByNome, seachByCnpj] = await Promise.all([
+        this.prismaService.barbearia.findUnique({ where: { email } }),
+        this.prismaService.barbearia.findUnique({ where: { nomeDaBarbearia } }),
+        this.prismaService.barbearia.findUnique({ where: { cnpj } }),
+      ]);
+
+      if (seachByCnpj) {
+        return { status: true, message: 'cnpj' };
       }
 
-      return { status: true };
+      if (seachByNome) {
+        return { status: true, message: 'nomeBarbearia' };
+      }
+
+      if (seachByEmail) {
+        return { status: true, message: 'Email' };
+      }
+
+      return { status: false };
     } catch (error) {
       console.log(error.message);
       return { status: false, message: error.message };
