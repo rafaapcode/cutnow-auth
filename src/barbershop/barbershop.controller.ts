@@ -1,9 +1,9 @@
 import { Body, Controller, Param, Put, UseGuards } from '@nestjs/common';
 import { BarbershopService } from './barbershop.service';
+import { AccessTokenGuard } from './common/guard/access_token/access_token.guard';
 import { UpdateBarbershopDto } from './dto/updateBarbershop';
 import { ZodValidationPipe } from './validation.pipe';
 import { UpdateAdminSchema } from './validations/updateBodySchema';
-import { AccessTokenGuard } from './common/guard/access_token/access_token.guard';
 
 @Controller('barbershop')
 export class BarbershopController {

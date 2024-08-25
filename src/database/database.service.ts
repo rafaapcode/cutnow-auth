@@ -273,28 +273,28 @@ export class DatabaseService {
           ...informacoes,
           ...informations,
         };
-
-        await tx.barbearia.update({
-          where: {
-            id,
-          },
-          data: {
-            ...newData,
-          },
-        });
-
-        await tx.barbearia.update({
-          where: {
-            id,
-          },
-          data: {
-            informacoes: {
-              update: {
-                ...newInformations,
+        await Promise.all([
+          tx.barbearia.update({
+            where: {
+              id,
+            },
+            data: {
+              ...newData,
+            },
+          }),
+          tx.barbearia.update({
+            where: {
+              id,
+            },
+            data: {
+              informacoes: {
+                update: {
+                  ...newInformations,
+                },
               },
             },
-          },
-        });
+          }),
+        ]);
       });
 
       return { status: true, message: 'Dados atualizados com sucesso !' };
