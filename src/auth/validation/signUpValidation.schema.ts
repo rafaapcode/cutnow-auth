@@ -1,11 +1,6 @@
 import { z } from 'zod';
 import { validateCEP, validateCnpj, validateCpf } from '../lib/utils';
 
-const messagePasswordError = {
-  message:
-    'Crie uma senha forte que contenha letras MAIÚSCULAS , minúsculas, números(123...) e caracteres especiais (!@#$&*).',
-};
-
 export const signUpAdminSchema = z
   .object({
     nome: z
@@ -26,11 +21,7 @@ export const signUpAdminSchema = z
       .refine(validateCnpj, { message: 'Forneça um CNPJ válido' }),
     senha: z
       .string({ message: 'A senha é obrigatória' })
-      .min(8, 'A senha deve ter no mínimo 8 caracteres')
-      .regex(
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-        messagePasswordError,
-      ),
+      .min(8, 'A senha deve ter no mínimo 8 caracteres'),
     informacoes: z.object({
       cep: z
         .string({ message: 'O CEP é obrigatório.' })
