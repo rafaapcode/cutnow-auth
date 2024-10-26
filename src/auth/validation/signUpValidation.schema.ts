@@ -78,11 +78,7 @@ export const signUpBarberSchema = z.object({
     .refine(validateCpf, 'Coloque um CPF válido'),
   senha: z
     .string({ message: 'A senha é obrigatória' })
-    .min(8, 'A senha deve ter no mínimo 8 caracteres')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
-      messagePasswordError,
-    ),
+    .min(8, 'A senha deve ter no mínimo 8 caracteres'),
   status: z.string().optional(),
   barbearia_id: z.string(),
   informacoes: z
