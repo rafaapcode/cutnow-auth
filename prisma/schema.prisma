@@ -16,8 +16,8 @@ model Barbearia {
   nome            String        @db.String
   nomeDaBarbearia String        @unique @db.String
   cnpj            String        @unique @db.String
-  latitude        Int           @db.Int
-  longitude       Int           @db.Int
+  latitude        Float         @db.Double
+  longitude       Float         @db.Double
   informacoes     InfoBarbearia
   servicos        Servicos[]
   barbeiro        Barbeiro[]
