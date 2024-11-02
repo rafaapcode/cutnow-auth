@@ -132,8 +132,8 @@ export class DatabaseService {
         data: {
           ...admin,
           senha: hashedPassword,
-          latitude: lat,
-          longitude: lng,
+          latitude: parseFloat(lat),
+          longitude: parseFloat(lng),
         },
       });
 
@@ -244,7 +244,10 @@ export class DatabaseService {
 
         const { informacoes: informations, ...otherInfos } = updateBody;
         const { informacoes, ...infosAboutBarbershop } = barbearia;
-        let latLng = {};
+        const latLng = {
+          latitude: 0,
+          longitude: 0,
+        };
         if (informations && informations.cep) {
           const dataResponse = await this.geolocationService.getLatAndLong({
             bairro: informations.bairro,
@@ -257,10 +260,8 @@ export class DatabaseService {
 
           const { lat, lng } = dataResponse.geometry.location;
 
-          latLng = {
-            latitude: `${lat}`,
-            longitude: `${lng}`,
-          };
+          latLng.latitude = parseFloat(lat);
+          latLng.longitude = parseFloat(lng);
         }
 
         const newData = {
