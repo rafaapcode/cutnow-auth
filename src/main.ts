@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
     credentials: true,
-    origin: '*',
+    origin: 'https://cutnow-frontend.vercel.app',
   });
   app.use(cookieParser());
   await app.listen(process.env.PORT);
